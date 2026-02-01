@@ -80,12 +80,25 @@
         }
 
         #counter { font-size: 1.2rem; color: var(--pink); margin-top: 20px; border-top: 1px solid #333; padding-top: 15px; font-weight: bold; }
+        
+        #cinema-text {
+            margin-top: 20px;
+            font-size: 1.1rem;
+            color: #ffffff;
+            font-style: italic;
+            animation: fadeIn 2s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
     </style>
 </head>
 <body>
 
-	<div id="step-start" class="container">
-	<img src="https://media1.tenor.com/m/6m3I1g_WiokAAAAC/fish-spin-sha.gif" width="600" height="107.38955823293173" alt="a fish is swimming on a white background ." fetchpriority="high" style="max-width: 191px;">
+    <div id="step-start" class="container">
+    <img src="https://media1.tenor.com/m/6m3I1g_WiokAAAAC/fish-spin-sha.gif" width="600" height="107.38955823293173" alt="a fish is swimming on a white background ." fetchpriority="high" style="max-width: 191px;">
         <h1>Hej! ❤️</h1>
         <p>Przygotowałem dla ciebie z okazji walentynek quiz, żeby zobaczyć co jest na końcu musisz przejść cały 😱</p>
         <button class="btn-choice" onclick="nextStep('quiz')">Okej</button>
@@ -103,6 +116,7 @@
         <button class="btn-choice" onclick="celebrate()">TAK</button>
         <div id="timer-display" class="hidden">
             <div id="counter">Jesteśmy razem już: <br><span id="days-count"></span> dni! 🥰</div>
+            <div id="cinema-text">Z tej okazji dzisiaj idziemy do kina i mam nadzieję, że będziemy się dzisiaj dobrze bawić! Kocham Cię!</div>
         </div>
     </div>
 
