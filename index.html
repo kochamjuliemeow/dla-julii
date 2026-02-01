@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kocham Julie ❤️</title>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        :root {
+            --bg-color: #0b090a;
+            --pink: #ff758f;
+            --red: #e63946;
+            --white: #ffffff;
+        }
+
+        body {
+            background: var(--bg-color);
+            background-image: radial-gradient(circle at center, #2d0a0a 0%, #0b090a 100%);
+            color: var(--white);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            background: rgba(0, 0, 0, 0.7);
+            border: 2px solid var(--pink);
+            backdrop-filter: blur(15px);
+            padding: 30px;
+            border-radius: 30px;
+            box-shadow: 0 0 40px rgba(255, 117, 143, 0.2);
+            text-align: center;
+            width: 90%;
+            max-width: 450px;
+            position: relative;
+        }
+
+        .hidden { display: none !important; }
+
+        h1, h2 { color: var(--pink); text-transform: uppercase; letter-spacing: 2px; }
+        p { line-height: 1.6; color: #ccc; }
+
+        .btn-choice {
+            background: transparent;
+            color: var(--white);
+            border: 2px solid var(--pink);
+            padding: 15px 25px;
+            margin: 10px 0;
+            border-radius: 50px;
+            cursor: pointer;
+            width: 100%;
+            transition: 0.3s all;
+            font-weight: bold;
+            font-size: 1rem;
+        }
+
+        .btn-choice:hover {
+            background: var(--pink);
+            color: var(--bg-color);
+            box-shadow: 0 0 20px var(--pink);
+        }
+
+        .error-overlay {
+            color: #ff4d4d;
+            font-weight: bold;
+            margin-top: 15px;
+            padding: 10px;
+            border: 1px dashed #ff4d4d;
+            animation: shake 0.4s;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        #counter { font-size: 1.2rem; color: var(--pink); margin-top: 20px; border-top: 1px solid #333; padding-top: 15px; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+	<div id="step-start" class="container">
+	<img src="https://media1.tenor.com/m/6m3I1g_WiokAAAAC/fish-spin-sha.gif" width="600" height="107.38955823293173" alt="a fish is swimming on a white background ." fetchpriority="high" style="max-width: 191px;">
+        <h1>Hej! ❤️</h1>
+        <p>Przygotowałem dla ciebie z okazji walentynek quiz, żeby zobaczyć co jest na końcu musisz przejść cały 😱</p>
+        <button class="btn-choice" onclick="nextStep('quiz')">Okej</button>
+    </div>
+
+    <div id="step-quiz" class="container hidden">
+        <h2 id="q-title">PYTANIE</h2>
+        <p id="q-text" style="font-weight: bold; color: white;"></p>
+        <div id="quiz-options"></div>
+        <div id="quiz-error" class="error-overlay hidden">Lepiej sobie przypomnij 😡</div>
+    </div>
+
+    <div id="step-final" class="container hidden">
+        <h2>Zostaniesz moją Walentynką? ❤️</h2>
+        <button class="btn-choice" onclick="celebrate()">TAK</button>
+        <div id="timer-display" class="hidden">
+            <div id="counter">Jesteśmy razem już: <br><span id="days-count"></span> dni! 🥰</div>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            { q: "Od kiedy jesteśmy razem?", o: ["24.08", "24.09", "24.10"], c: 1 },
+            { q: "Co jedliśmy na naszej pierwszej oficjalnej randce", o: ["Pizze", "Kebab", "Zapiekanki"], c: 2 },
+            { q: "Kto z nas pierwszy powiedział 'Kocham Cię'?", o: ["Ja", "On", "Oboje"], c: 1 },
+            { q: "Co mi ugotowałaś pierwszy raz", o: ["Frytki xd", "Makaron z Pesto", "Spaghetti"], c: 2 },
+            { q: "Jaki jest ulubiony kolor twojego chłopaka?", o: ["Nie wiem", "Czerwony", "Czarny"], c: 2 },
+            { q: "Gdzie dzisiaj mamy pójść na randke?", o: ["Do kina", "Nie pamiętam", "Chuj wie"], c: 0 },
+            { q: "W jaki dzień pierwszy raz sie zobaczyliśmy", o: ["31.08.2025", "2.09.2025", "poniedziałek"], c: 2 },
+            { q: "Jak się nazywa najlepsza istota na ziemii 🤯", o: ["Dania", "Danonka", "Beniamin"], c: 2 },
+            { q: "Kto napisał pierwszy?", o: ["Nie pamiętam", "Ja", "Ty"], c: 1 },
+            { q: "Ostatnie: Czy kochasz swojego chłopaka?", o: ["TAK", "Nie", "Chyba"], c: 0 }
+        ];
+
+        let currentQ = 0;
+
+        function nextStep(step) {
+            document.querySelectorAll('.container').forEach(c => c.classList.add('hidden'));
+            document.getElementById('step-' + step).classList.remove('hidden');
+            if (step === 'quiz') loadQuestion();
+        }
+
+        function loadQuestion() {
+            const data = questions[currentQ];
+            document.getElementById('q-title').innerText = `Pytanie ${currentQ + 1}/10`;
+            document.getElementById('q-text').innerText = data.q;
+            const optionsDiv = document.getElementById('quiz-options');
+            optionsDiv.innerHTML = '';
+            data.o.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                btn.className = 'btn-choice';
+                btn.innerText = opt;
+                btn.onclick = () => checkAnswer(idx);
+                optionsDiv.appendChild(btn);
+            });
+        }
+
+        function checkAnswer(selected) {
+            const correct = questions[currentQ].c;
+            const error = document.getElementById('quiz-error');
+
+            if (selected === correct) {
+                error.classList.add('hidden');
+                currentQ++;
+
+                if (currentQ < questions.length) {
+                    loadQuestion();
+                } else {
+                    nextStep('final');
+                }
+            } else {
+                error.classList.remove('hidden');
+            }
+        }
+
+        function celebrate() {
+            confetti({
+                particleCount: 150,
+                spread: 70,
+                origin: { y: 0.6 },
+                colors: ['#ff758f', '#e63946', '#ffffff']
+            });
+
+            // Logika licznika dni
+            const startDate = new Date('2025-09-24');
+            const today = new Date();
+            const timeDiff = today - startDate;
+            const daysDiff = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+
+            document.getElementById('days-count').innerText = daysDiff;
+            document.getElementById('timer-display').classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>
